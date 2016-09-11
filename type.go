@@ -1,6 +1,9 @@
 package tparser
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 type Types []Type
 
@@ -60,6 +63,31 @@ func (t *Type) StringO(prefix string) string {
 	}
 	return result
 }
+func (t *Type) FindFieldWithType(packageName string, packagePath string, typeName string) (bool, string, error) {
+	if t.Fields == nil {
+		return false, "", errors.New("Not a struct type")
+	}
+	for _, value := range t.Fields {
+		if value.Type.PkgName == packageName && value.Type.PkgPath == packagePath && typeName == value.Type.Name {
+			return true, value.Path(), nil
+		}
+		if value.Type.Kind == Struct {
+			b, p, err := value.Type.FindFieldWithType(packageName, packagePath, typeName)
+			if err != nil {
+				continue
+			}
+			return b, value.Path()+ p, nil
+		}
+		if value.Type.Kind == Ptr {
+			pt := value.Type.ElementT
+			if pt.PkgName == packageName && pt.PkgPath == packagePath && typeName == pt.Name {
+				return true, "." + value.Path(), nil
+
+			}
+		}
+	}
+	return false, "", errors.New("Can't find field with such type")
+}
 
 type FunctionParameter struct {
 	Name string
@@ -70,4 +98,11 @@ type Field struct {
 	Name      string
 	Type      *Type
 	Anonymous bool
+}
+
+func (f *Field) Path() string {
+	if f.Anonymous {
+		return "." + f.Type.Name
+	}
+	return "." + f.Name
 }

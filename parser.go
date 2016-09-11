@@ -189,6 +189,8 @@ func (pp *packageParse) parseType(e ast.Expr, to *Type) *Type {
 			result.Kind = Complex64
 		case "complex128":
 			result.Kind = Complex128
+		case "string":
+			result.Kind = String
 		default:
 			return pp.getTypeByName(ty.Name)
 		}

@@ -36,8 +36,9 @@ func main() {
     
     _, err := tparser.GetType("ABC")
     fmt.Println(err)                          // No such type
-}```
- 
+}
+```
+
 ### TODO ###
 
 - parse interfaces

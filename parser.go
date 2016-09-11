@@ -121,7 +121,12 @@ func (pp *packageParse) parseTypeSpec(t *ast.TypeSpec) {
 		return
 	}
 	ty := pp.getTypeByName(t.Name.Name)
+
 	pp.parseType(t.Type, ty)
+	if t.Name.Name == "D" {
+		fmt.Println(t.Name.Name)
+		fmt.Printf("%T", t.Type)
+	}
 }
 func (pp *packageParse) parseType(e ast.Expr, to *Type) *Type {
 	result := &Type{}
@@ -134,8 +139,16 @@ func (pp *packageParse) parseType(e ast.Expr, to *Type) *Type {
 		result.ElementT = pp.parseType(ty.X, nil)
 	case *ast.SelectorExpr:
 		packageName := getExprName(ty.X)
+		if to != nil && to.Name == "D" {
+			fmt.Println(packageName, ty.Sel.Name)
+		}
 		if v, ok := pp.importsTypes[packageName]; ok {
 			if vn, ok := v[ty.Sel.Name]; ok {
+				if to != nil {
+					to.Kind = Alias
+					to.ElementT = vn
+					return to
+				}
 				return vn
 			}
 		}
@@ -194,8 +207,15 @@ func (pp *packageParse) parseType(e ast.Expr, to *Type) *Type {
 			result.Kind = Complex128
 		case "string":
 			result.Kind = String
+		case "error":
+			result.Kind = Error
 		default:
-			return pp.getTypeByName(ty.Name)
+			t := pp.getTypeByName(ty.Name)
+			if to != nil {
+				to.Kind = Alias
+				to.ElementT = t
+			}
+			return t
 		}
 	default:
 		fmt.Printf("Parsing type %T\n", e)
@@ -216,15 +236,15 @@ func (pp *packageParse) parseFunctionParams(f *ast.FieldList) []*FunctionParamet
 
 		if len(arg.Names) == 0 {
 			result = append(result, &FunctionParameter{
-				Type:    Type,
+				Type:     Type,
 				Ellipsis: ty.ellipsis,
 			})
 			continue
 		}
 		for _, n := range arg.Names {
 			result = append(result, &FunctionParameter{
-				Type:    Type,
-				Name:    n.Name,
+				Type:     Type,
+				Name:     n.Name,
 				Ellipsis: ty.ellipsis,
 			})
 		}

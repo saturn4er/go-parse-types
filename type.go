@@ -3,6 +3,7 @@ package tparser
 import (
 	"errors"
 	"fmt"
+	"strconv"
 )
 
 type Types []Type
@@ -24,6 +25,24 @@ type Type struct {
 	Length   int
 }
 
+func (t *Type) CopyParamsFrom(ft *Type) *Type {
+	if ft == nil {
+		return t
+	}
+	t.PkgPath = ft.PkgPath
+	t.PkgName = ft.PkgName
+	t.KeyT = ft.KeyT
+	t.ElementT = ft.ElementT
+	t.Kind = ft.Kind
+	t.ellipsis = ft.ellipsis
+	t.Doc = ft.Doc
+	t.Fields = ft.Fields
+	t.Methods = ft.Methods
+	t.In = ft.In
+	t.Out = ft.Out
+	t.Length = ft.Length
+	return t
+}
 func (t *Type) String() string {
 	return t.StringO("")
 }
@@ -46,6 +65,7 @@ func (t *Type) StringO(prefix string) string {
 		result += prefix + "Args:\n"
 		for _, a := range t.In {
 			result += prefix + "   Name: " + a.Name + "\n"
+			result += prefix + "   Elipsis: " + strconv.FormatBool(a.Ellipsis) + "\n"
 			result += prefix + "   Type:\n" + a.Type.StringO(prefix+"      ")
 		}
 	case Ptr:

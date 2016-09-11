@@ -46,7 +46,7 @@ func TestParse(t *testing.T) {
 		})
 	})
 
-	for _, value := range parser.types {
+	for _, value := range parser.Types {
 		fmt.Println("----------")
 		fmt.Println(value)
 	}

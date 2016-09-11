@@ -18,16 +18,21 @@ type packageParse struct {
 	importPath   string
 	imports      []string
 	importsTypes map[string]map[string]*Type // Map of package => type name=> *Type
-	types        []*Type
+	Types        []*Type
 	nameTypes    map[string]*Type
 	fset         *token.FileSet
 	pkg          *ast.Package
 	doc          *doc.Package
 }
-
+func (pp *packageParse) GetType(name string) (*Type, error){
+	if v, ok := pp.nameTypes[name]; ok {
+		return v, nil
+	}
+	return nil, errors.New("No such type")
+}
 func (pp *packageParse) parse() error {
 	pp.nameTypes = make(map[string]*Type)
-	pp.types = []*Type{}
+	pp.Types = []*Type{}
 
 	pp.fset = token.NewFileSet() // positions are relative to fset
 	d, err := parser.ParseDir(pp.fset, pp.path, nil, 0)
@@ -49,7 +54,7 @@ func (pp *packageParse) parse() error {
 			continue
 		}
 		pp.importsTypes[ip.pkg.Name] = make(map[string]*Type)
-		for _, ty := range ip.types {
+		for _, ty := range ip.Types {
 			pp.importsTypes[ip.pkg.Name][ty.Name] = ty
 		}
 	}
@@ -64,7 +69,7 @@ func (pp *packageParse) getTypeByName(n string) *Type {
 			PkgPath: pp.importPath,
 			Kind:    Invalid,
 		}
-		pp.types = append(pp.types, ty)
+		pp.Types = append(pp.Types, ty)
 		pp.nameTypes[n] = ty
 	}
 	return pp.nameTypes[n]

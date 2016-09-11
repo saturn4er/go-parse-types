@@ -24,7 +24,8 @@ type packageParse struct {
 	pkg          *ast.Package
 	doc          *doc.Package
 }
-func (pp *packageParse) GetType(name string) (*Type, error){
+
+func (pp *packageParse) GetType(name string) (*Type, error) {
 	if v, ok := pp.nameTypes[name]; ok {
 		return v, nil
 	}
@@ -156,9 +157,38 @@ func (pp *packageParse) parseType(e ast.Expr, to *Type) *Type {
 		result.ElementT = pp.parseType(ty.Value, nil)
 	case *ast.Ident:
 		switch ty.Name {
+		case "bool":
+			result.Kind = Bool
 		case "int":
 			result.Kind = Int
-		case "error":
+		case "int8":
+			result.Kind = Int8
+		case "int16":
+			result.Kind = Int16
+		case "int32":
+			result.Kind = Int32
+		case "int64":
+			result.Kind = Int64
+		case "uint":
+			result.Kind = Uint
+		case "uint8":
+			result.Kind = Uint8
+		case "uint16":
+			result.Kind = Uint16
+		case "uint32":
+			result.Kind = Uint32
+		case "uint64":
+			result.Kind = Uint64
+		case "uintptr":
+			result.Kind = Uintptr
+		case "float32":
+			result.Kind = Float32
+		case "float64":
+			result.Kind = Float64
+		case "complex64":
+			result.Kind = Complex64
+		case "complex128":
+			result.Kind = Complex128
 		default:
 			return pp.getTypeByName(ty.Name)
 		}

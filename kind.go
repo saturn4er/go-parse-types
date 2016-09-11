@@ -70,5 +70,4 @@ var kindNames = []string{
 	Slice:         "slice",
 	String:        "string",
 	Struct:        "struct",
-	UnsafePointer: "unsafe.Pointer",
 }

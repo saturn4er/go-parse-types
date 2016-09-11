@@ -155,6 +155,9 @@ func (pp *packageParse) parseType(e ast.Expr, to *Type) *Type {
 		result.Kind = Map
 		result.KeyT = pp.parseType(ty.Key, nil)
 		result.ElementT = pp.parseType(ty.Value, nil)
+	case *ast.Ellipsis:
+		result.elipsis = true
+		result.ElementT = pp.parseType(ty.Elt, nil)
 	case *ast.Ident:
 		switch ty.Name {
 		case "bool":
@@ -195,7 +198,7 @@ func (pp *packageParse) parseType(e ast.Expr, to *Type) *Type {
 			return pp.getTypeByName(ty.Name)
 		}
 	default:
-		fmt.Printf("Parsing type %T", e)
+		fmt.Printf("Parsing type %T\n", e)
 	}
 	return result
 }
@@ -206,16 +209,23 @@ func (pp *packageParse) parseFunctionParams(f *ast.FieldList) []*FunctionParamet
 	}
 	for _, arg := range f.List {
 		ty := pp.parseType(arg.Type, nil)
+		Type := ty
+		if ty.elipsis == true {
+			Type = ty.ElementT
+		}
+
 		if len(arg.Names) == 0 {
 			result = append(result, &FunctionParameter{
-				Type: ty,
+				Type:    Type,
+				Elipsis: ty.elipsis,
 			})
 			continue
 		}
 		for _, n := range arg.Names {
 			result = append(result, &FunctionParameter{
-				Type: ty,
-				Name: n.Name,
+				Type:    Type,
+				Name:    n.Name,
+				Elipsis: ty.elipsis,
 			})
 		}
 	}

@@ -5,9 +5,8 @@ import (
 	"testing"
 
 	"github.com/saturn4er/go-parse-types/test_examples"
-	. "github.com/smartystreets/goconvey/convey"
-	"fmt"
 	"github.com/saturn4er/go-parse-types/test_examples/sub_pack"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestParse(t *testing.T) {
@@ -46,10 +45,6 @@ func TestParse(t *testing.T) {
 		})
 	})
 
-	for _, value := range parser.Types {
-		fmt.Println("----------")
-		fmt.Println(value)
-	}
 	Convey("Сheck sub_pack", t, func() {
 		parser, err = New("./test_examples/sub_pack")
 		So(err, ShouldBeNil)

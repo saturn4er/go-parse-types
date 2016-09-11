@@ -156,7 +156,7 @@ func (pp *packageParse) parseType(e ast.Expr, to *Type) *Type {
 		result.KeyT = pp.parseType(ty.Key, nil)
 		result.ElementT = pp.parseType(ty.Value, nil)
 	case *ast.Ellipsis:
-		result.elipsis = true
+		result.ellipsis = true
 		result.ElementT = pp.parseType(ty.Elt, nil)
 	case *ast.Ident:
 		switch ty.Name {
@@ -210,14 +210,14 @@ func (pp *packageParse) parseFunctionParams(f *ast.FieldList) []*FunctionParamet
 	for _, arg := range f.List {
 		ty := pp.parseType(arg.Type, nil)
 		Type := ty
-		if ty.elipsis == true {
+		if ty.ellipsis == true {
 			Type = ty.ElementT
 		}
 
 		if len(arg.Names) == 0 {
 			result = append(result, &FunctionParameter{
 				Type:    Type,
-				Elipsis: ty.elipsis,
+				Ellipsis: ty.ellipsis,
 			})
 			continue
 		}
@@ -225,7 +225,7 @@ func (pp *packageParse) parseFunctionParams(f *ast.FieldList) []*FunctionParamet
 			result = append(result, &FunctionParameter{
 				Type:    Type,
 				Name:    n.Name,
-				Elipsis: ty.elipsis,
+				Ellipsis: ty.ellipsis,
 			})
 		}
 	}

@@ -15,7 +15,7 @@ type Type struct {
 	KeyT     *Type // KeyType
 	ElementT *Type // ElementType
 	Kind     Kind
-	elipsis  bool
+	ellipsis bool
 	Doc      string
 	Fields   []*Field
 	Methods  []*Type
@@ -91,9 +91,9 @@ func (t *Type) FindFieldWithType(packageName string, packagePath string, typeNam
 }
 
 type FunctionParameter struct {
-	Name    string
-	Type    *Type
-	Elipsis bool
+	Name     string
+	Type     *Type
+	Ellipsis bool
 }
 
 type Field struct {

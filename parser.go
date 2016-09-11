@@ -1,4 +1,4 @@
-package types
+package tparser
 
 // Package main provides
 import (

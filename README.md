@@ -10,8 +10,16 @@ Library to parse types defined in golang source code
 ### Usage example###
 
     package main  
+    
+    import "github.com/saturn4er/go-parse-types"
+    
+    type SomeType struct {
+        a, b int
+        c bool
+    }
+    
     func main() {
-        parser, err = New("./test_package")
+        parser, err = tparser.New("./test_package")
         if err != nil {
             panic(err)
         }
@@ -19,8 +27,10 @@ Library to parse types defined in golang source code
         if err != nil {
             panic(err)
         }
-        type := parser.GetTypeByName("SomeType")
-        
+        type := tparser.GetTypeByName("SomeType")
+        fmt.Println(type.Kind)                    // struct
+        fmt.Println(type.Name)                    // SomeType
+        fmt.Println(len(type.Fields))             // 3
     }
  
      
